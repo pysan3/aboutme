@@ -1,30 +1,19 @@
 <template>
   <div id="app" class="bg-light">
-    <!-- <header class="sticky-top"><HeaderDefault :key="this.$i18n.locale"/></header> -->
-    <img src="favicon.ico" class="d-inline-block align-top" :alt="$t('Profile.name')">
-    <router-link to="/">home</router-link>
-    <br>
-    <router-link to="/resume">resume</router-link>
-    <br>
-    <router-link to="/researches">researches</router-link>
-    <br>
-    <router-link to="/papers">papers</router-link>
-    <br>
-    <router-link to="/datasets">datasets</router-link>
-    <br>
-    <router-link to="/codes">codes</router-link>
-    <br>
-    <button v-for="l in $i18n.availableLocales" :key="l" @click="$i18n.locale = l">{{ l }}</button>
+    <!-- <header class="sticky-top"><HeaderTmp :key="this.$i18n.locale"/></header> -->
+    <header class="sticky-top"><HeaderTmp :key="this.$i18n.locale"/></header>
     <div class="desktop pt-3 container"><router-view :key="$route.fullPath"/></div>
   </div>
 </template>
 
 <script>
 // import HeaderDefault from '@/components/HeaderDefault.vue';
+import HeaderTmp from '@/components/HeaderTmp.vue';
 
 export default {
   components: {
     // HeaderDefault,
+    HeaderTmp,
   },
   watch: {
     '$i18n.locale': function () {
@@ -64,4 +53,6 @@ img.emoji
   height 1em
   width 1em
   vertical-align -0.1em
+.pointer
+  cursor pointer
 </style>
