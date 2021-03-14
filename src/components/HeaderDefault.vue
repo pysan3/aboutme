@@ -1,6 +1,6 @@
 <template>
   <div id="headerDefault">
-    <b-navbar toggleable="sm" type="dark" variant="dark">
+    <b-navbar toggleable="md" type="dark" variant="dark">
       <b-navbar-brand to="/" class="mr-auto px-2">
         <img src="favicon.ico" class="d-inline-block align-top" :alt="$t('Profile.name')">
         {{ $t("Profile.name") }}

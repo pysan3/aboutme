@@ -1,6 +1,6 @@
 <template>
   <div id="headertmp">
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <div class="container">
         <router-link to='/' class="navbar-brand">
           <img src="favicon.ico" :alt="$t('Profile.name')" class="top-icon mx-1">
