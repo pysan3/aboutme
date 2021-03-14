@@ -18,5 +18,5 @@ if [ $? -eq 0 ]; then
     if [ $? -eq 0 ]; then
         ssh lab cp -r ~/public_html ~/public_backup
     fi
-    # scp -rp dist/* lab:~/public_test
+    scp -rp dist/* lab:~/public_html
 fi
