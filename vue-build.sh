@@ -1,7 +1,7 @@
 #!/bin/bash
 
-python edit_configs.py --show
 python edit_configs.py --lang
+python edit_configs.py --show
 rm -rf public/events
 cpp -R events public
 
@@ -14,10 +14,9 @@ npm run $build
 
 checkyes "scp to lab?"
 if [ $? -eq 0 ]; then
-    scp -rp dist/* lab:~/public_test
-fi
-
-checkyes 'update webpage?'
-if [ $? -eq 0 ]; then
-    ssh -t lab:~/hp_update.sh
+    checkyes "make a backup at lab:~/public_backup ?"
+    if [ $? -eq 0 ]; then
+        ssh lab cp -r ~/public_html ~/public_backup
+    fi
+    # scp -rp dist/* lab:~/public_test
 fi
