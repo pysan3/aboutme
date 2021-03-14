@@ -26,15 +26,17 @@ def unix2ctime(t:str):
 
 mattermost = False
 def share_on_mattermost(*msg:str):
-    share_msg = ''
-    for s in msg:
-        share_msg += '\n' + s.replace('"', r'\"')
-    command = f'mattermost share "{share_msg}"'
+    share_msg = '\n'.join([s.replace('"', r'\"') for s in msg])
     if mattermost == 'strict':
         print('not sharing...')
         return
+    print('mattermost share', share_msg)
     if mattermost or rinput('Share it on Mattermost? \[y/N]: ') == 'y':
-        os.system(command)
+        note = rinput('Note ? [""]: ')
+        if len(note) != 0:
+            share_msg += '\nNote: ' + note
+        print(share_msg)
+        os.system(f'mattermost share "{share_msg}"')
 
 class DotEnvParser:
     def __init__(self, env_path) -> None:
@@ -300,7 +302,7 @@ class Events:
         self.events.append(new_event)
         self.show_all_events()
 
-        share_on_mattermost(f'New page uploaded! https://esslab.jp/~takuto/#/events/' + str(new_event['id']), f'"{new_event["title"]}"')
+        share_on_mattermost(f'New page uploaded! https://esslab.jp/~takuto/#/event/' + str(new_event['id']), f'**{new_event["title"]}**')
 
     def update(self, md_path:Path):
         old_events = list(filter(lambda x:x['markdown'] == str(md_path), self.events))
@@ -318,7 +320,7 @@ class Events:
         self.events.append(new_event)
         # self.show_all_events()
 
-        share_on_mattermost(f'Updated https://esslab.jp/~takuto/#/events/' + str(new_event['id']), f'"{new_event["title"]}"')
+        share_on_mattermost(f'Updated https://esslab.jp/~takuto/#/event/' + str(new_event['id']), f'**{new_event["title"]}**')
 
 def copy_files(source:str, *dist:str):
     source_name = f'src/views/{source.capitalize()}.vue'

@@ -13,5 +13,5 @@
 
 ## 詳細
 
-[pdf](events/events_files/2020_projB.pdf)
+[PDF](events/events_files/2020_projB.pdf)
 <!-- pdflink: 2020_projB.pdf -->
