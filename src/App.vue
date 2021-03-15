@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="bg-light">
     <!-- <header class="sticky-top"><HeaderTmp :key="this.$i18n.locale"/></header> -->
-    <header class="sticky-top"><HeaderTmp :key="this.$i18n.locale"/></header>
+    <header class="sticky-top"><HeaderTmp/></header>
     <div class="desktop pt-3 container"><router-view :key="$route.fullPath"/></div>
   </div>
 </template>
