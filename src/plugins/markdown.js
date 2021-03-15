@@ -80,5 +80,22 @@ const md = new MarkdownIt({
   .use(container, 'danger');
 
 md.renderer.rules.emoji = (token, idx) => twemoji.parse(token[idx].content);
+md.renderer.rules.footnote_ref = (tokens, idx, options, env, slf) => {
+  const id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
+  const caption = slf.rules.footnote_caption(tokens, idx, options, env, slf);
+  let refid = id;
+  if (tokens[idx].meta.subId > 0) {
+    refid += `:${ tokens[idx].meta.subId}`;
+  }
+  return `<sup class="footnote-ref"><a href="javascript:;" onclick="window.location.hash=[...window.location.hash.split('/').slice(0,3),'fn${ id }'].join('/');" id="fnref${ refid }">${ caption }</a></sup>`;
+};
+md.renderer.rules.footnote_anchor = (tokens, idx, options, env, slf) => {
+  let id = slf.rules.footnote_anchor_name(tokens, idx, options, env, slf);
+  if (tokens[idx].meta.subId > 0) {
+    id += `:${ tokens[idx].meta.subId}`;
+  }
+  /* ↩ with escape code to prevent display as Apple Emoji on iOS */
+  return ` <a href="javascript:;" onclick="window.location.hash=[...window.location.hash.split('/').slice(0,3),'fnref${ id }'].join('/');" class="footnote-backref">\u21a9\uFE0E</a>`;
+};
 
 export default md;

@@ -7,7 +7,7 @@ const routerOptions = [
   { path: '/papers', component: 'Papers' },
   { path: '/datasets', component: 'Datasets' },
   { path: '/codes', component: 'Codes' },
-  { path: '/event/:id', component: 'Event' },
+  { path: '/event/:id/:anchor?', component: 'Event' },
   { path: '/:pathMatch(.*)*', component: 'NotFound' },
 ];
 

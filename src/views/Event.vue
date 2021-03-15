@@ -43,6 +43,12 @@ export default {
       if (this.pageData === undefined) return;
       this.$axios.get(this.pageData.markdown).then((response) => {
         this.markdown_body = markdownIt.render(response.data);
+      }).then(() => {
+        const e = document.getElementById(this.$route.params.anchor);
+        if (e) {
+          const margin = e.getBoundingClientRect().top - document.getElementsByTagName('header')[0].offsetHeight;
+          window.scrollTo(0, margin);
+        }
       });
     },
     change_lang(lang) {
@@ -55,6 +61,7 @@ export default {
           name: 'event',
           params: {
             id: nextID,
+            anchor: this.$route.params.anchor,
           },
         });
       }
@@ -65,7 +72,7 @@ export default {
       this.change_lang(to);
     },
   },
-  created() {
+  mounted() {
     this.fetch_md();
   },
 };
