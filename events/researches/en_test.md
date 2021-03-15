@@ -7,3 +7,7 @@ an awsome description
 
 - foo
 - bar
+
+### img test
+
+![Title Image](events/events_img/favicon.png) <!-- highlight-img -->
