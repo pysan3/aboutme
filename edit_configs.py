@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 from rich import print
 from rich.table import Table
 
@@ -83,8 +83,7 @@ class MarkdownParser:
             'md': self.md_content,
             'markdown': self.md_content
         }
-        content = options[compiler_name]() if compiler_name in options else self.default_content(compiler_name)
-        return BeautifulSoup(content, 'html.parser').prettify(encoding='utf-8').decode()
+        return options[compiler_name]() if compiler_name in options else self.default_content(compiler_name)
 
     def get_created_at(self):
         if 'created_at' not in self.info:
@@ -99,7 +98,7 @@ class MarkdownParser:
         return result
 
     def get_title(self):
-        title = BeautifulSoup(self.file_content, 'html.parser').find('h1')
+        title = bs(self.file_content, 'html.parser').find('h1')
         if title:
             return ''.join([f'{s}'.strip() for s in title.contents])
         print('[red]Could not find title[/]', file=sys.stderr)
@@ -132,7 +131,7 @@ class MarkdownParser:
         for line in self.file_content.split('\n'):
             if r'highlight-img' in line:
                 if r'<img' in line:
-                    highlight_path = line[line.index('src="') + 6:].split('"')[0]
+                    highlight_path = line[line.index('src="') + 5:].split('"')[0]
                 else:
                     highlight_path = line[re.search(r'!\[(?:(?!!\[|\]).)*\]', line).end() + 1:].split(')')[0]
                 break
@@ -182,7 +181,7 @@ class MarkdownParser:
         ]
         subprocess.run((command + ' --'.join(options)).split(), stdout=subprocess.DEVNULL)
         with tmpFile.open('r') as f:
-            soup = BeautifulSoup(f.read(), 'html.parser')
+            soup = bs(f.read(), 'html.parser')
             for img in soup.find_all('img'):
                 img['src'] = str(Path(img['src']))
         tmpFile.unlink()

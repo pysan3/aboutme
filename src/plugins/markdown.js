@@ -34,7 +34,6 @@ npm install --save \
 
 import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js';
-import inlinecomments from 'markdown-it-inline-comments';
 import emoji from 'markdown-it-emoji';
 import katex from '@iktakahiro/markdown-it-katex';
 import checkbox from 'markdown-it-checkbox';
@@ -62,7 +61,6 @@ const md = new MarkdownIt({
   typographer: true,
 })
   .use(attribution)
-  .use(inlinecomments)
   .use(katex, { throwOnError: false, errorColor: ' #cc0000' })
   .use(emoji)
   .use(checkbox)
