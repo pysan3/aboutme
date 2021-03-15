@@ -22,6 +22,7 @@ export default {
   },
   async created() {
     this.$store.dispatch('fetchAllEvents');
+    this.$store.dispatch('fetchGitData', 'takuto');
   },
 };
 </script>
