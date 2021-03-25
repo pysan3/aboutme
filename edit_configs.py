@@ -1,3 +1,4 @@
+from paramsparser import Json2Params
 import argparse
 import datetime as dt
 import json
@@ -17,15 +18,19 @@ from rich.table import Table
 def rinput(*args):
     print(*args, end='', flush=True)
     return input()
-from paramsparser import Json2Params
+
 
 checkyes = False
 
-def unix2ctime(t:str):
+
+def unix2ctime(t: str):
     return dt.datetime.fromtimestamp(int(t)).ctime()
 
+
 mattermost = False
-def share_on_mattermost(*msg:str):
+
+
+def share_on_mattermost(*msg: str):
     share_msg = '\n'.join([s.replace('"', r'\"') for s in msg])
     if mattermost == 'strict':
         print('not sharing...')
@@ -37,6 +42,7 @@ def share_on_mattermost(*msg:str):
             share_msg += '\nNote: ' + note
         print(share_msg)
         os.system(f'mattermost share "{share_msg}"')
+
 
 class DotEnvParser:
     def __init__(self, env_path) -> None:
@@ -52,9 +58,12 @@ class DotEnvParser:
                 key, *values = line.split('=')
                 self.envs[key] = '='.join(values)
 
+
 class MarkdownParser:
-    def __init__(self, path:Path, info={}, compiler='showdown') -> None:
-        self.path:Path = path
+    def __init__(self, path: Path, info=None, compiler='showdown') -> None:
+        if info is None:
+            info = {}
+        self.path: Path = path
         if not self.path.exists():
             print(f'[red]No File Found[/]', file=sys.stderr)
             sys.exit(1)
@@ -90,11 +99,13 @@ class MarkdownParser:
             result = dt.datetime.now().strftime('%s')
         else:
             result = self.info['created_at']
-        created = rinput(f'created_at? [yy mm dd] (default: {unix2ctime(result)}): ')
+        created = rinput(
+            f'created_at? [yy mm dd] (default: {unix2ctime(result)}): ')
         if created == 'now':
             result = dt.datetime.now().strftime('%s')
         elif created != '':
-            result = dt.datetime(*[int(i) for i in created.split(' ')]).strftime('%s')
+            result = dt.datetime(*[int(i)
+                                 for i in created.split(' ')]).strftime('%s')
         return result
 
     def get_title(self):
@@ -131,9 +142,11 @@ class MarkdownParser:
         for line in self.file_content.split('\n'):
             if r'highlight-img' in line:
                 if r'<img' in line:
-                    highlight_path = line[line.index('src="') + 5:].split('"')[0]
+                    highlight_path = line[line.index(
+                        'src="') + 5:].split('"')[0]
                 else:
-                    highlight_path = line[re.search(r'!\[(?:(?!!\[|\]).)*\]', line).end() + 1:].split(')')[0]
+                    highlight_path = line[re.search(
+                        r'!\[(?:(?!!\[|\]).)*\]', line).end() + 1:].split(')')[0]
                 break
         return str(Path(highlight_path))
 
@@ -144,11 +157,12 @@ class MarkdownParser:
         return path
 
     def get_keys(self, keyname):
-            result = re.search(rf'<!-- {keyname}:(?:(?!<!-- {keyname}:|-->).)*-->', self.file_content)
-            if result:
-                return result.group()[len(f'<!-- {keyname}:'):-len('-->')].strip()
-            else:
-                return None
+        result = re.search(
+            rf'<!-- {keyname}:(?:(?!<!-- {keyname}:|-->).)*-->', self.file_content)
+        if result:
+            return result.group()[len(f'<!-- {keyname}:'):-len('-->')].strip()
+        else:
+            return None
 
     def print_info(self):
         print('file:', self.path)
@@ -156,9 +170,9 @@ class MarkdownParser:
 
     def showdown_content(self):
         # tmpFile = (lambda x,f=lambda f,x=Path(f'tmp-{random.random()}.html'):f(f,f()if x.exists()else x):f(f))()
-        def generateTmpFile(x:Path=Path(f'tmp-{random.random()}.html')):
-            return generateTmpFile() if x.exists() else x
-        tmpFile = generateTmpFile()
+        def generateTmpFile(x: str = f'tmp-{random.random()}.html'):
+            return generateTmpFile() if Path(x).exists() else x
+        tmpFile = Path(generateTmpFile())
         tmpFile.touch(exist_ok=False)
         command = f'showdown makehtml -i {self.path} -o {tmpFile} '
         options = [
@@ -179,7 +193,8 @@ class MarkdownParser:
             'underline',
             'completeHTMLDocument'
         ]
-        subprocess.run((command + ' --'.join(options)).split(), stdout=subprocess.DEVNULL)
+        subprocess.run((command + ' --'.join(options)).split(),
+                       stdout=subprocess.DEVNULL)
         with tmpFile.open('r') as f:
             soup = bs(f.read(), 'html.parser')
             for img in soup.find_all('img'):
@@ -196,8 +211,10 @@ class MarkdownParser:
 
     def default_content(self, cmd):
         with self.path.open(mode='r') as f:
-            p = subprocess.Popen(cmd.split(' '), stdin=f, stdout=subprocess.PIPE)
+            p = subprocess.Popen(cmd.split(' '), stdin=f,
+                                 stdout=subprocess.PIPE)
             return p.stdout.read().decode()
+
 
 class Events:
     def __init__(self, output_dir='./events/', json_name='events.json', compiler='markdown-it') -> None:
@@ -223,7 +240,8 @@ class Events:
         self.params.events = self.events
         self.params.topic_group = self.topic_group
         self.params.max_id = self.max_id
-        self.params.biblist = [f'events/events_files/{b.name}' for b in self.output_dir.glob('events_files/*.bib')]
+        self.params.biblist = [
+            f'events/events_files/{b.name}' for b in self.output_dir.glob('events_files/*.bib')]
         if new_filename is None:
             new_filename = self.json_path
         self.params.save(new_filename=str(new_filename), overwrite=True)
@@ -236,7 +254,8 @@ class Events:
         table.add_column('version', justify='center')
         table.add_column('created_at')
         for i, event in enumerate(events):
-            table.add_row(str(i), event['filename'] + '.md', f'[green]{event["title"]}', str(event['version']), unix2ctime(event['created_at']))
+            table.add_row(str(i), event['filename'] + '.md', f'[green]{event["title"]}', str(
+                event['version']), unix2ctime(event['created_at']))
         print(table)
 
     def delete(self):
@@ -258,8 +277,8 @@ class Events:
         print('Topic Groups:', self.topic_group)
         print('Num of Contents:', self.max_id)
 
-    def _title_options(self, s:str, lang:str):
-        events_list = list(filter(lambda x:x['lang'] != lang, self.events))
+    def _title_options(self, s: str, lang: str):
+        events_list = list(filter(lambda x: x['lang'] != lang, self.events))
         sets = set([])
         for keyword in s.split():
             sets |= set(
@@ -268,7 +287,7 @@ class Events:
             )
         return [e for e in events_list if e['id'] in sets]
 
-    def create(self, md_path:Path, translate=False):
+    def create(self, md_path: Path, translate=False):
         self.max_id += 1
         new_event = {
             'id': self.max_id,
@@ -284,12 +303,15 @@ class Events:
 
         group_id = -1
         if translate:
-            title_list = self._title_options(rinput('Translated title: '), new_event['lang'])
+            title_list = self._title_options(
+                rinput('Translated title: '), new_event['lang'])
             self.list_events(title_list)
-            group_id = title_list[int(rinput('Translated which File? [-1]: ') or '-1')]['topic_id']
+            group_id = title_list[int(
+                rinput('Translated which File? [-1]: ') or '-1')]['topic_id']
         else:
             if new_event['filename'] in [e['filename'] for e in self.events]:
-                print('[red]You probably have already added this file[/]', file=sys.stderr)
+                print(
+                    '[red]You probably have already added this file[/]', file=sys.stderr)
                 sys.exit(1)
 
         if group_id == -1:
@@ -301,12 +323,15 @@ class Events:
         self.events.append(new_event)
         self.show_all_events()
 
-        share_on_mattermost(f'New page uploaded! https://esslab.jp/~takuto/#/event/' + str(new_event['id']), f'**{new_event["title"]}**')
+        share_on_mattermost(f'New page uploaded! https://esslab.jp/~takuto/#/event/' +
+                            str(new_event['id']), f'**{new_event["title"]}**')
 
-    def update(self, md_path:Path):
-        old_events = list(filter(lambda x:x['markdown'] == str(md_path), self.events))
+    def update(self, md_path: Path):
+        old_events = list(
+            filter(lambda x: x['markdown'] == str(md_path), self.events))
         if len(old_events) == 0:
-            print(f'[red]Could not find old data.[/] Maybe try [blue]-c[/] option', sys.stderr)
+            print(
+                f'[red]Could not find old data.[/] Maybe try [blue]-c[/] option', sys.stderr)
             sys.exit(1)
         new_event = old_events[0]
         self.events.pop(self.events.index(new_event))
@@ -319,9 +344,11 @@ class Events:
         self.events.append(new_event)
         # self.show_all_events()
 
-        share_on_mattermost(f'Updated https://esslab.jp/~takuto/#/event/' + str(new_event['id']), f'**{new_event["title"]}**')
+        share_on_mattermost(f'Updated https://esslab.jp/~takuto/#/event/' +
+                            str(new_event['id']), f'**{new_event["title"]}**')
 
-def copy_files(source:str, *dist:str):
+
+def copy_files(source: str, *dist: str):
     source_name = f'src/views/{source.capitalize()}.vue'
     for t in dist:
         if t == source:
@@ -332,32 +359,33 @@ def copy_files(source:str, *dist:str):
             os.system(f'cp {source_name} {to_name}')
             os.system(f'sed -i -e "s/{source}/{t}/g" {to_name}')
 
+
 class Notifications:
     def __init__(self, output_dir='./events', json_name='notifications.json') -> None:
         if not isinstance(output_dir, Path):
             output_dir = Path(output_dir)
-        self.output_dir:Path = output_dir
+        self.output_dir: Path = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.json_name = json_name
-        self.json_path:Path = self.output_dir / self.json_name
+        self.json_path: Path = self.output_dir / self.json_name
         if not self.json_path.exists():
             self.delete_all(save=True)
         self.load()
 
     def delete_all(self, save=True):
-        self.data:List[Dict[str,Any]] = []
+        self.data: List[Dict[str, Any]] = []
         if save:
             self.save()
 
     def load(self):
         with self.json_path.open(mode='r') as f:
-            self.data:List[Dict[str,Any]] = json.loads(f.read())
+            self.data: List[Dict[str, Any]] = json.loads(f.read())
 
     def save(self):
         with self.json_path.open(mode='w') as f:
             f.write(json.dumps(self.data, indent=4, sort_keys=True))
 
-    def add(self, datetime:dt.datetime, contents:Dict[str,str], description=None, link=None):
+    def add(self, datetime: dt.datetime, contents: Dict[str, str], description=None, link=None):
         new_data = {
             'date': datetime.strftime('%s'),
             'content': contents,
@@ -366,14 +394,17 @@ class Notifications:
         new_data['link'] = link
         self.data.append(new_data)
 
-        share_on_mattermost('New notification on https://esslab.jp/~takuto/', new_data['description'])
+        share_on_mattermost(
+            'New notification on https://esslab.jp/~takuto/', new_data['description'])
 
     def add_interact(self):
-        date, time = [s.strip() for s in (rinput('date [(Y )M D, (h m)]: ') + ',,').split(',')][:2]
+        date, time = [s.strip() for s in (
+            rinput('date [(Y )M D, (h m)]: ') + ',,').split(',')][:2]
         if len(date.split(' ')) == 2:
             date = f'{dt.datetime.now().year} {date}'
         time += '0 0'
-        datetime = dt.datetime(*[int(i) for i in date.split(' ') + time.split(' ')])
+        datetime = dt.datetime(*[int(i)
+                               for i in date.split(' ') + time.split(' ')])
         languages = VueI18nDict().availableLocales
         content = {}
         content_prev = []
@@ -384,7 +415,8 @@ class Notifications:
                 if len(content_prev) <= index:
                     content_prev.append({'tag': '?', 'content': ''})
                 prev = content_prev[index]
-                tag, text = [s.lstrip() for s in (rinput(f'<{prev["tag"]}>(q:quit), "{prev["content"]}" [[green]{l}[/]]: ') + ',,').split(',')][:2]
+                tag, text = [s.lstrip() for s in (rinput(
+                    f'<{prev["tag"]}>(q:quit), "{prev["content"]}" [[green]{l}[/]]: ') + ',,').split(',')][:2]
                 if tag == 'q':
                     break
                 elif tag == '':
@@ -406,6 +438,7 @@ class Notifications:
                 link[l] = link_prev
             link_prev = link[l]
         self.add(datetime, content, description, link)
+
 
 class VueI18nDict:
     def __init__(self, lang_dir='./src/lang', json_name='dictionary.json') -> None:
@@ -432,8 +465,10 @@ class VueI18nDict:
                     if len(keys) < len(languages) + 1:
                         continue
                     for i, lang in enumerate(languages):
-                        self.dictionary[lang].setdefault(p.stem.capitalize(), {})
-                        self.dictionary[lang][p.stem.capitalize()][keys[0]] = keys[i + 1].replace('~', ',')
+                        self.dictionary[lang].setdefault(
+                            p.stem.capitalize(), {})
+                        self.dictionary[lang][p.stem.capitalize(
+                        )][keys[0]] = keys[i + 1].replace('~', ',')
 
     def reset(self):
         self.dictionary = {}
@@ -445,24 +480,35 @@ class VueI18nDict:
     def print(self):
         print(self.dictionary)
 
+
 if __name__ == "__main__":
     env = DotEnvParser('./.env')
 
     parser = argparse.ArgumentParser(description='upload .md to your webpage')
-    parser.add_argument('-y', '--yes', action='store_true', help='say yes to all questions')
+    parser.add_argument('-y', '--yes', action='store_true',
+                        help='say yes to all questions')
     parser.add_argument('-p', '--paste', type=str, help='copy [from] [to,...]')
-    parser.add_argument('-m', '--mattermost', type=str, help='share on mattermost without check')
+    parser.add_argument('-m', '--mattermost', type=str,
+                        help='share on mattermost without check')
     parser.add_argument('--compiler', type=str, help='compiler [command str]')
     args_notifications = parser.add_mutually_exclusive_group()
-    args_notifications.add_argument('-n', '--notifications', action='store_true', help='add notification')
-    args_notifications.add_argument('--nd', action='store_true', help='delete all notification')
+    args_notifications.add_argument(
+        '-n', '--notifications', action='store_true', help='add notification')
+    args_notifications.add_argument(
+        '--nd', action='store_true', help='delete all notification')
     args_markdown = parser.add_mutually_exclusive_group()
-    args_markdown.add_argument('-c', '--create', type=str, help='create [filepath]')
-    args_markdown.add_argument('-t', '--translate', type=str, help='translate [filepath]')
-    args_markdown.add_argument('-u', '--update', type=str, help='update [filepath]')
-    args_markdown.add_argument('-d', '--delete', action='store_true', help='delete')
-    args_markdown.add_argument('--deleteall', action='store_true', help='init events.json')
-    args_markdown.add_argument('--showall', action='store_true', help='print events.json')
+    args_markdown.add_argument(
+        '-c', '--create', type=str, help='create [filepath]')
+    args_markdown.add_argument(
+        '-t', '--translate', type=str, help='translate [filepath]')
+    args_markdown.add_argument(
+        '-u', '--update', type=str, help='update [filepath]')
+    args_markdown.add_argument(
+        '-d', '--delete', action='store_true', help='delete')
+    args_markdown.add_argument(
+        '--deleteall', action='store_true', help='init events.json')
+    args_markdown.add_argument(
+        '--showall', action='store_true', help='print events.json')
     parser.add_argument('--lang', action='store_true', help='language json')
 
     args = parser.parse_args()
@@ -474,7 +520,8 @@ if __name__ == "__main__":
     if args.mattermost:
         mattermost = True
 
-    events = Events(output_dir='./events', json_name='events.json', compiler=args.compiler)
+    events = Events(output_dir='./events',
+                    json_name='events.json', compiler=args.compiler)
     if args.create:
         events.create(Path(args.create), translate=False)
     elif args.translate:
