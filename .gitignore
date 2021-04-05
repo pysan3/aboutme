@@ -111,4 +111,5 @@ __pycache__
 .venv
 .vscode
 .session.vim
+.vim
 pip-selfcheck.json
