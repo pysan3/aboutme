@@ -3,10 +3,7 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: [
-    'plugin:vue/vue3-essential',
-    '@vue/airbnb',
-  ],
+  extends: ['prettier', 'plugin:vue/vue3-essential', '@vue/airbnb'],
   parserOptions: {
     parser: 'babel-eslint',
   },
@@ -15,9 +12,13 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-shadow': 'off',
     'template-curly-spacing': 'off',
-    indent: ['error', 2, {
-      ignoredNodes: ['TemplateLiteral'],
-    }],
+    indent: [
+      'error',
+      2,
+      {
+        ignoredNodes: ['TemplateLiteral'],
+      },
+    ],
     'no-extend-native': 'off',
     'max-len': ['error', { code: 256 }],
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],

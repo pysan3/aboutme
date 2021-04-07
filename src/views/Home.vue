@@ -105,13 +105,19 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-img
-  width 216px
-  height 308px
-  object-fit cover
-.overflow-hidden
-  overflow hidden!important
-#git_calendar
-  @media (prefers-color-scheme: dark)
-    fill green
+img {
+  width: 216px;
+  height: 308px;
+  object-fit: cover;
+}
+
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+#git_calendar {
+  @media (prefers-color-scheme: dark) {
+    fill: green;
+  }
+}
 </style>
