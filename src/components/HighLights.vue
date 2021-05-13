@@ -8,7 +8,7 @@
           <h5 class="font-weight-bold mt-2 mb-0">
             <span v-show="event.version > 0 && (Date.now() - event.created_at * 1000) / 86400000 < 14">[{{ $t('Message.updated') }}]</span>
             <span><router-link
-              :to="{ name: 'event', params: { id: event.id } }"
+              :to="{ name: 'event', params: { id: $_eventURL(event.id) } }"
               v-html="event.title"
             ></router-link></span>
           </h5>

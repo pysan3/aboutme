@@ -27,7 +27,7 @@ export default {
   components: { DisplayBibtex, NotFound },
   computed: {
     pageID() {
-      return parseInt(this.$route.params.id, 10);
+      return parseInt(this.$route.params.id.split('_')[0], 10);
     },
     pageData() {
       return this.$store.getters.getEvents.find((e) => e.id === Math.abs(this.pageID));
@@ -60,7 +60,7 @@ export default {
         this.$router.push({
           name: 'event',
           params: {
-            id: nextID,
+            id: this.$_eventURL(nextID),
             anchor: this.$route.params.anchor,
           },
         });
@@ -79,7 +79,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '../plugins/markdown'
+@import '../plugins/markdown';
 </style>
 
 <style scoped>

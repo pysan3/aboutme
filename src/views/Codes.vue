@@ -6,7 +6,7 @@
       <div v-for="event in e.e" :key="event.id" class="border-bottom text-justify mb-2 p-2 d-flex flex-column">
         <div class="d-flex flex-wrap justify-content-end">
           <h4 class="mt-auto mb-0 mr-auto"><router-link
-            :to="{ name: 'event', params: { id: event.id } }"
+            :to="{ name: 'event', params: { id: $_eventURL(event.id) } }"
             class="font-weight-bold"
             v-html="event.title"
           ></router-link></h4>
