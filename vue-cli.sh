@@ -23,6 +23,6 @@ fi
 
 checkyes "scp to nginx?"
 if [ $? -eq 0 ]; then
-    sudo mkdir -p /usr/share/nginx/html/~takuto
-    sudo rsync -r dist/* /usr/share/nginx/html/~takuto
+    ssh dynabook mkdir -p /var/www/html/~takuto
+    rsync -r dist/* dynabook:/var/www/html/~takuto
 fi
