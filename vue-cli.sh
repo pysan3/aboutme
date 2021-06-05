@@ -2,15 +2,15 @@
 
 python edit_configs.py --lang
 python edit_configs.py --show
-rm -rf public/events
+\rm -rf public/events
 cpp -R events public
 
-build='build'
-if [ $# -ge 1 ]; then
-    build=$1
+if [[ x"$1" = xserve ]]; then
+    npm run "$1"
+    return
 fi
 
-npm run $build
+npm run $1
 
 checkyes "scp to lab?"
 if [ $? -eq 0 ]; then
@@ -18,5 +18,11 @@ if [ $? -eq 0 ]; then
     if [ $? -eq 0 ]; then
         ssh lab cp -r ~/public_html ~/public_backup
     fi
-    scp -rp dist/* lab:~/public_html
+    rsync -rp dist/* lab:~/public_html
+fi
+
+checkyes "scp to nginx?"
+if [ $? -eq 0 ]; then
+    sudo mkdir -p /usr/share/nginx/html/~takuto
+    sudo rsync -r dist/* /usr/share/nginx/html/~takuto
 fi
