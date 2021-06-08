@@ -49,6 +49,7 @@ export default {
           const margin = e.getBoundingClientRect().top - document.getElementsByTagName('header')[0].offsetHeight;
           window.scrollTo(0, margin);
         }
+        if (this.pageData.id === this.pageID) this.$i18n.locale = this.pageData.lang || this.$i18n.locale;
       });
     },
     change_lang(lang) {
