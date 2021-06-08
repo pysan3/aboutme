@@ -99,7 +99,7 @@ class MarkdownParser:
             result = dt.datetime.now().strftime('%s')
         else:
             result = self.info['created_at']
-        created = rinput(f'created_at? [yy mm dd] (default: {unix2ctime(result)}): ')
+        created = rinput(f'created_at? \\[yy mm dd] (default: {unix2ctime(result)}): ')
         if created == 'now':
             result = dt.datetime.now().strftime('%s')
         elif created != '':
