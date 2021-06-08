@@ -13,8 +13,7 @@
             ></router-link></span>
           </h5>
           <p class="text-secondary m-1" @click="$router.push({ name: event.category })" style="cursor: pointer">
-            {{ $t(`Head.${event.category}`) }}
-            {{ $d(new Date(event.created_at * 1000), 'short') }}
+            {{ $t(`Head.${event.category}`) }}・{{ $d(new Date(event.created_at * 1000), 'short') }}
           </p>
           <hr class="my-1">
           <section v-html="event.description" class="event-description"></section>
